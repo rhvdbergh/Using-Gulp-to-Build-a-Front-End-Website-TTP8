@@ -59,12 +59,22 @@ gulp.task('scripts', ['rename-js'], () => {
 gulp.task('compilesass', () => {
 
     return gulp.src('./sass/**/*.scss')
+        .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
+        .pipe(sourcemaps.write('../dist/styles/'))
         .pipe(gulp.dest('./tempcss/'));
 });
 
+// rename the scss sourcemap file
+gulp.task('rename-css-sourcemap', ['compilesass'], () => {
+
+    return gulp.src('./dist/styles/global.css.map')
+        .pipe(rename('all.min.css.map'))
+        .pipe(gulp.dest('./dist/styles/'));
+});
+
 // concatenate css files (should there be more than one!)
-gulp.task('concat-css', ['compilesass'], () => {
+gulp.task('concat-css', ['rename-css-sourcemap'], () => {
 
     return gulp.src('./tempcss/**/*.css')
         .pipe(concat('all.min.css'))
@@ -81,6 +91,6 @@ gulp.task('minify-css', ['concat-css'], () => {
 // gulp styles will compile SCSS files into CSS, concat, minify and delete tempcss folder
 gulp.task('styles', ['minify-css'], () => {
 
-    return gulp.src('./tempcss/')
+    return gulp.src(['./tempcss/', './dist/styles/global.css.map'])
         .pipe(clean()); // delete the tempcss directory
 });
