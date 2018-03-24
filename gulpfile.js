@@ -6,6 +6,7 @@ const minify = require('gulp-minify');
 const rename = require('gulp-rename');
 const clean = require('gulp-clean');
 const sass = require('gulp-sass');
+const cleanCSS = require('gulp-clean-css'); // to minify CSS
 
 // ----- JavaScript files
 
@@ -43,3 +44,27 @@ gulp.task('scripts', ['rename-js'], () => {
 });
 
 // ------ CSS files
+
+// compiles sass to css into a temp folder
+gulp.task('compilesass', () => {
+
+    return gulp.src('./sass/**/*.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest('./tempcss/'));
+});
+
+// concatenate css files (should there be more than one!)
+gulp.task('concat-css', ['compilesass'], () => {
+
+    return gulp.src('./tempcss/**/*.css')
+        .pipe(concat('all.css'))
+        .pipe(gulp.dest('./tempcss/'))
+});
+
+gulp.task('minify-css', ['concat-css'], () => {
+
+    return gulp.src('./tempcss/all.css')
+        .pipe(cleanCSS())
+        .pipe(gulp.dest('./tempcss/'));
+
+});
