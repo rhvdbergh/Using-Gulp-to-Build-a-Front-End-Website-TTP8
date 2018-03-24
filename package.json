@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/rhvdbergh/Using-Gulp-to-Build-a-Front-End-Website-TTP8#readme",
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1"
   }
 }
