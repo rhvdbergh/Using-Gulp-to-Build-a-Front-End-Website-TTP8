@@ -35,7 +35,7 @@ gulp.task('rename-js', ['minify-js'], () => {
         .pipe(gulp.dest('./dist/scripts/'));
 });
 
-// gulp scripts will run 
+// gulp scripts will run concat-js, minify-js, rename the file, and delete temporary files
 gulp.task('scripts', ['rename-js'], () => {
 
     return gulp.src(['./dist/scripts/all.js', './dist/scripts/all-min.js'])
@@ -57,14 +57,20 @@ gulp.task('compilesass', () => {
 gulp.task('concat-css', ['compilesass'], () => {
 
     return gulp.src('./tempcss/**/*.css')
-        .pipe(concat('all.css'))
+        .pipe(concat('all.min.css'))
         .pipe(gulp.dest('./tempcss/'))
 });
 
 gulp.task('minify-css', ['concat-css'], () => {
 
-    return gulp.src('./tempcss/all.css')
+    return gulp.src('./tempcss/all.min.css')
         .pipe(cleanCSS())
-        .pipe(gulp.dest('./tempcss/'));
+        .pipe(gulp.dest('./dist/styles/'));
+});
 
+// gulp styles will compile SCSS files into CSS, concat, minify and delete tempcss folder
+gulp.task('styles', ['minify-css'], () => {
+
+    return gulp.src('./tempcss/')
+        .pipe(clean()); // delete the tempcss directory
 });
