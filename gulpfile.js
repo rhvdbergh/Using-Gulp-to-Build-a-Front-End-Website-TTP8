@@ -8,7 +8,16 @@ const clean = require('gulp-clean');
 const sass = require('gulp-sass');
 const cleanCSS = require('gulp-clean-css'); // to minify CSS
 
-// ----- JavaScript files
+// ----- general utility tasks
+
+// deletes the dist/ folder with all files
+gulp.task('clean', () => {
+
+    return gulp.src('./dist/')
+        .pipe(clean());
+});
+
+// ----- JavaScript file tasks
 
 // concat js files
 gulp.task('concat-scripts', () => {
@@ -43,7 +52,7 @@ gulp.task('scripts', ['rename-js'], () => {
 
 });
 
-// ------ CSS files
+// ------ CSS task files
 
 // compiles sass to css into a temp folder
 gulp.task('compilesass', () => {
