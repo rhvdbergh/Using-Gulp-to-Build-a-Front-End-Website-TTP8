@@ -7,6 +7,7 @@ const rename = require('gulp-rename');
 const clean = require('gulp-clean');
 const sass = require('gulp-sass');
 const cleanCSS = require('gulp-clean-css'); // to minify CSS
+const sourcemaps = require('gulp-sourcemaps');
 
 // ----- general utility tasks
 
