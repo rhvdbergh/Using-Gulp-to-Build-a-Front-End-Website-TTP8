@@ -1,0 +1,25 @@
+{
+  "name": "gulp-frontend-builder",
+  "version": "1.0.0",
+  "description": "An app using gulp to build a front end webpage. Treehouse Techdegree Project 8.",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rhvdbergh/Using-Gulp-to-Build-a-Front-End-Website-TTP8.git"
+  },
+  "keywords": [
+    "gulp",
+    "front",
+    "end",
+    "nodejs"
+  ],
+  "author": "Ronald van der Bergh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rhvdbergh/Using-Gulp-to-Build-a-Front-End-Website-TTP8/issues"
+  },
+  "homepage": "https://github.com/rhvdbergh/Using-Gulp-to-Build-a-Front-End-Website-TTP8#readme"
+}
