@@ -110,11 +110,22 @@ gulp.task('images', () => {
 
 });
 
+// ----- icon files
+
+// this simply copies the icon files into the dist/icons folder
+gulp.task('icons', () => {
+
+    gulp.src('./icons/**')
+        .pipe(gulp.dest('./dist/icons'));
+});
+
 // ----- build and default
 
+// build the project, but first clean
 gulp.task('build', ['clean'], () => {
 
-    return runSequence(['scripts', 'styles', 'images']);
+    // these tasks will be run asynchronously
+    return runSequence(['scripts', 'styles', 'images', 'icons']);
 });
 
 gulp.task('default', ['build']);
