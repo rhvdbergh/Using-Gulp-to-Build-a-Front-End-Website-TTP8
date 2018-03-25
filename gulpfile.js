@@ -9,12 +9,14 @@ const sass = require('gulp-sass');
 const cleanCSS = require('gulp-clean-css'); // to minify CSS
 const sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin'); // image optimizer
+const runSequence = require('run-sequence'); // easy way to combine sync and async tasks
+// run-sequence will help with making sure that clean runs before the build
 
 // ----- general utility tasks
 
 // deletes the dist/ folder with all files
 gulp.task('clean', () => {
-
+    console.log('starting clean');
     return gulp.src('./dist/')
         .pipe(clean());
 });
@@ -23,7 +25,7 @@ gulp.task('clean', () => {
 
 // concat js files
 gulp.task('concat-scripts', () => {
-
+    console.log('starting scripts');
     return gulp.src(['./js/**/*.js'])
         .pipe(sourcemaps.init())
         .pipe(concat('all.min.js')) // actually not minified yet, but helpful for sourcemaps to already have .min. name
@@ -108,4 +110,11 @@ gulp.task('images', () => {
         .pipe(imagemin())
         .pipe(gulp.dest('./dist/content/'));
 
+});
+
+// ----- build and default
+
+gulp.task('build', ['clean'], () => {
+
+    return runSequence(['scripts', 'styles', 'images']);
 });
