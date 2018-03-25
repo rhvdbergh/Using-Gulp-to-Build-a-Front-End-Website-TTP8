@@ -84,6 +84,7 @@ gulp.task('concat-css', ['rename-css-sourcemap'], () => {
         .pipe(gulp.dest('./tempcss/'))
 });
 
+// minify css
 gulp.task('minify-css', ['concat-css'], () => {
 
     return gulp.src('./tempcss/all.min.css')
@@ -96,4 +97,15 @@ gulp.task('styles', ['minify-css'], () => {
 
     return gulp.src(['./tempcss/', './dist/styles/global.css.map'])
         .pipe(clean()); // delete the tempcss directory
+});
+
+// ----- image files
+
+// optimize jpg and png files and save to dist/images folder
+gulp.task('images', () => {
+
+    return gulp.src('./images/**')
+        .pipe(imagemin())
+        .pipe(gulp.dest('./dist/content/'));
+
 });
