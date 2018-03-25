@@ -24,7 +24,9 @@ gulp.task('clean', () => {
 gulp.task('concat-scripts', () => {
 
     return gulp.src(['./js/**/*.js'])
-        .pipe(concat('all.js'))
+        .pipe(sourcemaps.init())
+        .pipe(concat('all.min.js')) // actually not minified yet, but helpful for sourcemaps to already have .min. name
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./dist/scripts/'));
 });
 
@@ -32,9 +34,9 @@ gulp.task('concat-scripts', () => {
 gulp.task('minify-js', ['concat-scripts'], () => {
 
     return gulp.src(['./dist/scripts/*.js'])
-        .pipe(minify({ ignoreFiles: ['all-min.js', 'all.min.js'] }))
+        .pipe(minify({ ignoreFiles: ['all.min-min.js', 'all.min.js'] }))
         // exclude these files if they are still left in the folder by accident
-        .pipe(gulp.dest('./dist//scripts/'));
+        .pipe(gulp.dest('./dist/scripts/'));
 });
 
 // rename the output file all-min.js to all.min.js
