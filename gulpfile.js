@@ -11,6 +11,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin'); // image optimizer
 const runSequence = require('run-sequence'); // easy way to combine sync and async tasks
 // run-sequence will help with making sure that clean runs before the build
+const connect = require('gulp-connect'); // server
 
 // ----- general utility tasks
 
@@ -119,13 +120,32 @@ gulp.task('icons', () => {
         .pipe(gulp.dest('./dist/icons'));
 });
 
+// ----- html files
+
+// copy all html to dist folder
+gulp.task('html', () => {
+
+    gulp.src('./*.html')
+        .pipe(gulp.dest('./dist/'));
+})
+
+// web server
+gulp.task('serve', () => {
+
+    return connect.server({
+        root: './dist/',
+        port: 3000
+    })
+
+});
+
 // ----- build and default
 
 // build the project, but first clean
 gulp.task('build', ['clean'], () => {
 
-    // these tasks will be run asynchronously
-    return runSequence(['scripts', 'styles', 'images', 'icons']);
+    // the first set of tasks will be run asynchronously, then the server will run
+    return runSequence(['scripts', 'styles', 'images', 'icons', 'html'], 'serve');
 });
 
 gulp.task('default', ['build']);
