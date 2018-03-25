@@ -8,6 +8,7 @@ const clean = require('gulp-clean');
 const sass = require('gulp-sass');
 const cleanCSS = require('gulp-clean-css'); // to minify CSS
 const sourcemaps = require('gulp-sourcemaps');
+const imagemin = require('gulp-imagemin'); // image optimizer
 
 // ----- general utility tasks
 
