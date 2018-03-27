@@ -79,8 +79,8 @@ gulp.task('rename-js', ['minify-js'], () => {
 // gulp scripts will run concat-js, minify-js, rename the file, and delete temporary files
 gulp.task('scripts', ['rename-js'], () => {
 
-    return gulp.src(['./dist/scripts/all.js', './dist/scripts/all.min-min.js'])
-        .pipe(clean()); // remove all.js and all-min.js
+    return gulp.src(['./dist/scripts/all.min.js.map', './dist/scripts/all.min-min.js'])
+        .pipe(clean()); // remove extra files
 
 });
 
