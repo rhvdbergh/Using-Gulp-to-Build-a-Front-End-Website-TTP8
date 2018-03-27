@@ -29,11 +29,13 @@ const minify = require('gulp-minify');
 const rename = require('gulp-rename');
 const clean = require('gulp-clean');
 const sass = require('gulp-sass');
-const cleanCSS = require('gulp-clean-css'); // to minify CSS
+const csso = require('gulp-csso');
 const sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin'); // image optimizer
 const runSequence = require('run-sequence'); // easy way to combine sync and async tasks
 // run-sequence will help with making sure that clean runs before the build
+const replace = require('gulp-replace'); // fixes paths and file names in the final build index.html
+const insert = require('gulp-insert');
 const connect = require('gulp-connect'); // server
 
 // ----- general utility tasks
@@ -49,7 +51,7 @@ gulp.task('clean', () => {
 // concat js files
 gulp.task('concat-scripts', () => {
     return gulp.src(['./js/**/*.js'])
-        .pipe(sourcemaps.init())
+        .pipe(sourcemaps.init({ loadMaps: true }))
         .pipe(concat('all.min.js')) // actually not minified yet, but helpful for sourcemaps to already have .min. name
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./dist/scripts/'));
@@ -82,38 +84,33 @@ gulp.task('scripts', ['rename-js'], () => {
 
 // ------ CSS task files
 
-// compiles sass to css into a temp folder
+// compiles sass to css into css folder
 gulp.task('compilesass', () => {
 
     return gulp.src('./sass/**/*.scss')
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
         .pipe(rename('all.min.css'))
-        .pipe(sourcemaps.write('../dist/styles/'))
-        .pipe(gulp.dest('./tempcss/'));
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('./css/'));
 });
 
 // concatenate css files (should there be more than one!)
 gulp.task('concat-css', ['compilesass'], () => {
 
-    return gulp.src('./tempcss/**/*.css')
+    return gulp.src('./css/**/*.css')
         .pipe(concat('all.min.css'))
-        .pipe(gulp.dest('./tempcss/'))
+        .pipe(gulp.dest('./css/'))
 });
 
 // minify css
-gulp.task('minify-css', ['concat-css'], () => {
+gulp.task('styles', ['concat-css'], () => {
 
-    return gulp.src('./tempcss/all.min.css')
-        .pipe(cleanCSS())
+    return gulp.src('./css/all.min.css')
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(csso({ sourceMap: true }))
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./dist/styles/'));
-});
-
-// gulp styles will compile SCSS files into CSS, concat, minify and delete tempcss folder
-gulp.task('styles', ['minify-css'], () => {
-
-    return gulp.src(['./tempcss/', './dist/styles/global.css.map'])
-        .pipe(clean()); // delete the tempcss directory
 });
 
 // ----- image files
@@ -124,7 +121,6 @@ gulp.task('images', () => {
     return gulp.src('./images/**')
         .pipe(imagemin())
         .pipe(gulp.dest('./dist/content/'));
-
 });
 
 // ----- icon files
@@ -157,11 +153,22 @@ gulp.task('serve', () => {
 
 // ----- build and default
 
+// changes the references in the final build index.html to 
+// the correct, renamed resources
+gulp.task('fixFileNames', () => {
+
+    return gulp.src('./dist/index.html')
+        .pipe(replace('css/global.css', 'styles/all.min.css'))
+        .pipe(replace('js/global.js', 'scripts/all.min.js'))
+        .pipe(replace('images', 'content'))
+        .pipe(gulp.dest('./dist/'));
+});
+
 // build the project, but first clean
 gulp.task('build', ['clean'], () => {
 
-    // the first set of tasks will be run asynchronously, then the server will run
-    return runSequence(['scripts', 'styles', 'images', 'icons', 'html'], 'serve');
+    // the first set of tasks will be run asynchronously, then the index.html will be changed, then the server will run
+    return runSequence(['scripts', 'styles', 'images', 'icons', 'html'], ['fixFileNames'], 'serve');
 });
 
 gulp.task('default', ['build']);
