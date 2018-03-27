@@ -61,15 +61,17 @@ gulp.task('concat-scripts', () => {
 gulp.task('minify-js', ['concat-scripts'], () => {
 
     return gulp.src(['./dist/scripts/*.js'])
-        .pipe(minify({ ignoreFiles: ['all.min-min.js', 'all.min.js'] }))
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(minify())
         // exclude these files if they are still left in the folder by accident
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./dist/scripts/'));
 });
 
 // rename the output file all-min.js to all.min.js
 gulp.task('rename-js', ['minify-js'], () => {
 
-    return gulp.src('./dist/scripts/all-min.js')
+    return gulp.src('./dist/scripts/all.min-min.js')
         .pipe(rename('all.min.js'))
         .pipe(gulp.dest('./dist/scripts/'));
 });
@@ -77,7 +79,7 @@ gulp.task('rename-js', ['minify-js'], () => {
 // gulp scripts will run concat-js, minify-js, rename the file, and delete temporary files
 gulp.task('scripts', ['rename-js'], () => {
 
-    return gulp.src(['./dist/scripts/all.js', './dist/scripts/all-min.js'])
+    return gulp.src(['./dist/scripts/all.js', './dist/scripts/all.min-min.js'])
         .pipe(clean()); // remove all.js and all-min.js
 
 });
