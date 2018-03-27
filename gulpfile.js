@@ -28,12 +28,14 @@ const concat = require('gulp-concat');
 const minify = require('gulp-minify');
 const uglify = require('gulp-uglify');
 const gulpif = require('gulp-if');
+const lazypipe = require('lazypipe');
 const rename = require('gulp-rename');
 const clean = require('gulp-clean');
 const sass = require('gulp-sass');
 const cleanCSS = require('gulp-clean-css'); // to minify CSS
 const sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin'); // image optimizer
+const replace = require('gulp-replace'); // to replace references to "images" folder with "content"
 const useref = require('gulp-useref');
 const runSequence = require('run-sequence'); // easy way to combine sync and async tasks
 // run-sequence will help with making sure that clean runs before the build
@@ -154,20 +156,32 @@ gulp.task('serve', () => {
 
 // buildref builds the html with references, concatenates, minifies, 
 // and copies .js and .css files to the dist folder
-gulp.task('buildref', () => {
+gulp.task('buildref', ['clean'], () => {
 
     return gulp.src('./index.html')
-        .pipe(useref())
+        .pipe(useref({}, lazypipe().pipe(sourcemaps.init, { loadMaps: true })))
         .pipe(gulpif("*.js", uglify()))
         .pipe(gulpif("*.css", cleanCSS()))
+        .pipe(sourcemaps.write('maps'))
         .pipe(gulp.dest('./dist/'));
 });
 
-// build the project, but first clean
-gulp.task('build', ['clean'], () => {
+// replaces references to images/ with references to content/ in the 
+// index.html file for final build
+// assumes that the index.html file exists in dist/ folder
+gulp.task('replaceImageFolder', () => {
+
+    return gulp.src('dist/index.html')
+        .pipe(replace('images', 'content'))
+        .pipe(gulp.dest('dist'));
+});
+
+// build the project, then replace "images" folder with "content" for final build 
+// then copy images, icons and serve on a local webserver
+gulp.task('build', ['buildref'], () => {
 
     // the first set of tasks will be run asynchronously, then the server will run
-    return runSequence(['scripts', 'styles', 'images', 'icons', 'html'], 'serve');
+    return runSequence(['replaceImageFolder', 'images', 'icons'], 'serve');
 });
 
 gulp.task('default', ['build']);
