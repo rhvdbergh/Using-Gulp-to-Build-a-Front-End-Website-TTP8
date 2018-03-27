@@ -36,7 +36,7 @@ const runSequence = require('run-sequence'); // easy way to combine sync and asy
 // run-sequence will help with making sure that clean runs before the build
 const replace = require('gulp-replace'); // fixes paths and file names in the final build index.html
 const insert = require('gulp-insert');
-const connect = require('gulp-connect'); // server
+const connect = require('gulp-connect'); // server; uses livereload to load pages on the fly when scss files change
 
 // ----- general utility tasks
 
@@ -81,7 +81,6 @@ gulp.task('scripts', ['rename-js'], () => {
 
     return gulp.src(['./dist/scripts/all.min.js.map', './dist/scripts/all.min-min.js'])
         .pipe(clean()); // remove extra files
-
 });
 
 // ------ CSS task files
@@ -148,17 +147,26 @@ gulp.task('serve', () => {
 
     return connect.server({
         root: './dist/',
-        port: 3000
+        port: 3000,
+        livereload: true
     })
 });
 
 // ----- watch
 
+// reloads the browser after compiling css
+gulp.task('reload', ['styles'], () => {
+
+    return gulp.src('./dist/index.html')
+        .pipe(gulp.dest('./dist'))
+        .pipe(connect.reload());
+});
+
 // watches for changes to SCSS files
 // it will then run the styles task
 gulp.task('watch', () => {
 
-    gulp.watch('./sass/**/*.scss', ['styles']);
+    gulp.watch('./sass/**/*.scss', ['reload']);
 });
 
 // ----- build and default
