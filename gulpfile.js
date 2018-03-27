@@ -143,14 +143,22 @@ gulp.task('html', () => {
         .pipe(gulp.dest('./dist/'));
 })
 
-// web server
+// ----- web server
 gulp.task('serve', () => {
 
     return connect.server({
         root: './dist/',
         port: 3000
     })
+});
 
+// ----- watch
+
+// watches for changes to SCSS files
+// it will then run the styles task
+gulp.task('watch', () => {
+
+    gulp.watch('./sass/**/*.scss', ['styles']);
 });
 
 // ----- build and default
@@ -170,7 +178,7 @@ gulp.task('fixFileNames', () => {
 gulp.task('build', ['clean'], () => {
 
     // the first set of tasks will be run asynchronously, then the index.html will be changed, then the server will run
-    return runSequence(['scripts', 'styles', 'images', 'icons', 'html'], ['fixFileNames'], 'serve');
+    return runSequence(['scripts', 'styles', 'images', 'icons', 'html'], ['fixFileNames'], 'serve', 'watch');
 });
 
 gulp.task('default', ['build']);
