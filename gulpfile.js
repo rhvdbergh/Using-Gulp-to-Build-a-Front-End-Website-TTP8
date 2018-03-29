@@ -186,7 +186,10 @@ gulp.task('fixFileNames', () => {
 gulp.task('build', ['clean'], () => {
 
     // the first set of tasks will be run asynchronously, then the index.html will be changed, then the server will run
-    return runSequence(['scripts', 'styles', 'images', 'icons', 'html'], ['fixFileNames'], 'serve', 'watch');
+    return runSequence(['scripts', 'styles', 'images', 'icons', 'html'], ['fixFileNames']);
 });
 
-gulp.task('default', ['build']);
+gulp.task('default', ['build'], () => {
+
+    return runSequence('serve', 'watch');
+});
